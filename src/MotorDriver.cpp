@@ -133,3 +133,121 @@ void MotorDriver::stopRightSide(){
     BLState = STOP;
 }
 
+void MotorDriver::changeSpeedLeft(int speed,bool lowSpeed = false){
+    if(!lowSpeed){
+        analogWrite(FLME, speed);
+        analogWrite(BLME, speed);
+    }else{
+
+    }
+}
+
+void MotorDriver::changeSpeedRight(int speed, bool lowSpeed = false){
+    if(!lowSpeed){
+        analogWrite(FRME, speed);
+        analogWrite(BRME, speed);
+    }else{
+
+    }
+}
+
+// naprednije komande za laksu kontrolu
+
+void MotorDriver::fowardCar(int speed){
+    if(speed < 80) speed = 80;
+
+    if(BLState != FOWARD && FLState != FOWARD && BRState != FOWARD && FRState != FOWARD){
+        fowardRightSide(100);
+        delay(10);
+        fowardLeftSide(200);
+        delay(9);
+        fowardLeftSide(speed);
+        fowardRightSide(speed);
+    }else{
+        if(BLState == FOWARD && FLState == FOWARD){
+            changeSpeedLeft(speed);
+        }else{
+            stopLeftSide();
+            delay(2);
+            fowardLeftSide(speed);
+        }
+
+        if(BRState == FOWARD && FRState == FOWARD){
+            changeSpeedRight(speed);
+        }else{
+            stopRightSide();
+            delay(2);
+            fowardRightSide(speed);
+        }
+    }
+}
+
+void MotorDriver::backCar(int speed){
+    if(speed < 70) speed = 70;
+
+    if(BLState != BACK && FLState != BACK && BRState != BACK && FRState != BACK){
+        backRightSide(100);
+        delay(10);
+        backLeftSide(200);
+        delay(9);
+        backLeftSide(speed);
+        backRightSide(speed);
+    }else{
+        if(BLState == BACK && FLState == BACK){
+            changeSpeedLeft(speed);
+        }else{
+            stopLeftSide();
+            delay(2);
+            backLeftSide(speed);
+        }
+
+        if(BRState == BACK && FRState == BACK){
+            changeSpeedRight(speed);
+        }else{
+            stopRightSide();
+            delay(2);
+            backRightSide(speed);
+        }
+    }
+}
+
+void MotorDriver::rotateInPlace(int speed, bool right){
+    if(speed < 140) speed = 160;
+    stopLeftSide();
+    stopRightSide();
+    delay(3);
+    if(right){
+        fowardLeftSide(speed+30);
+        delay(8);
+        backRightSide(speed);
+    }else{
+        backLeftSide(speed+30);
+        delay(8);
+        fowardRightSide(speed);
+    }
+}
+
+void MotorDriver::stopCar(){
+    stopLeftSide();
+    stopRightSide();
+}
+
+void MotorDriver::controlCar(Command command, int speed){
+    switch(command){
+        case STOPC:
+            stopCar();
+            break;
+        case FOWARDC:
+            fowardCar(speed);
+            break;
+        case BACKC:
+            backCar(speed);
+            break;
+        case ROTATERIGHTC:
+            rotateInPlace(speed, true);
+            break;
+        case ROTATELEFTC:
+            rotateInPlace(speed, false);
+            break;
+    }
+}

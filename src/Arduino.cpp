@@ -4,14 +4,42 @@
 MotorDriver motori;
 
 void setup() {
-    delay(1000);
-    motori.backLeftSide(70);
-    motori.backRightSide(70);
-    delay(1500);
-    motori.fowardLeftSide(0);
-    motori.fowardRightSide(0);
+    Serial.begin(115200);
 }
 
 void loop() {
-  
+    String data = "";
+    Command command;
+
+    int speed;
+    bool controling = false;
+
+    if(Serial.available() > 0){
+        data = Serial.readStringUntil('\n');
+    }
+
+    if(data.length() > 0){
+        String tmp = "";
+
+        for(int i = 0; i < data.length(); i++){
+            if(data[i] == ';'){
+                command = (Command)tmp.toInt();
+                i++;
+                tmp = "";
+            }
+                tmp += data[i];
+        }
+
+        speed = tmp.toInt();
+        controling = true;
+
+
+    }
+
+    if(controling){
+        controling = false;
+        motori.controlCar(command, speed);
+    }
+
+    delay(20);
 }
