@@ -1,4 +1,5 @@
-                    *****   BAGISTER 2   *****
+<h1 align="center" style="font-size: 48px;">BAGISTER 2</h1>
+
 
 Ukratko o projektu i planu razvoja:
     Projekat prestavlja cilj razvoja malog robotskog automobila daljinski upravljivog
@@ -43,3 +44,5 @@ Istorija razvoja:
         -Razvijen komunikacioni protokoo ka sistemom za upravljanje motora (ESP -> ARDUINO)
         -Razvijen set naprednijih upravljackih komandi za rukovanje motorima
         -Razvijen u okviru samog drajvera sistem za prijem komande i odgovor na istu
+    V2.2.0
+        -Razvijen napredniji sistem komunikacije dzojstik <-> auto zasnovan na ESP-NOW
