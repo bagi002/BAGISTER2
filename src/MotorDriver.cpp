@@ -129,8 +129,8 @@ void MotorDriver::stopRightSide(){
     digitalWrite(BRMB, LOW);
     analogWrite(BRME, 0);
 
-    FLState = STOP;
-    BLState = STOP;
+    FRState = STOP;
+    BRState = STOP;
 }
 
 void MotorDriver::changeSpeedLeft(int speed,bool lowSpeed = false){
@@ -212,16 +212,16 @@ void MotorDriver::backCar(int speed){
 }
 
 void MotorDriver::rotateInPlace(int speed, bool right){
-    if(speed < 140) speed = 160;
+    if(speed < 140) speed = 200;
     stopLeftSide();
     stopRightSide();
     delay(3);
     if(right){
-        fowardLeftSide(speed+30);
+        fowardLeftSide(speed);
         delay(8);
         backRightSide(speed);
     }else{
-        backLeftSide(speed+30);
+        backLeftSide(speed);
         delay(8);
         fowardRightSide(speed);
     }

@@ -55,3 +55,6 @@ Istorija razvoja:
         -Unapredjen motor drajver da podrzi rolling kretanje odnosno motanje u pokretu
         -unapredjivanje veze izmedju dva uredjaja tako da podrzi dodatne podatke
         -Kreiran sistem prijema informacije na automobilu i slanje podataka drajveru motora
+    V2.4.1
+        -Ispravljena greska u drajveru vozila koja je nakon skretanja vozila izaazivala gresku pri 
+         kretanju naprjed
