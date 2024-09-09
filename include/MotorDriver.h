@@ -6,7 +6,8 @@ enum MotorStatus{
 };
 
 enum Command{
-    STOPC, FOWARDC, BACKC, ROTATELEFTC, ROTATERIGHTC
+    FOWARDC, BACKC, ROTATELEFTC, ROTATERIGHTC, STOPC,
+    FOWARDRIGHTC, FOWARDLEFTC, BACKRIGHTC, BACKLEFTC
 };
 
 class MotorDriver{
@@ -47,9 +48,10 @@ public:
     void backCar(int);
     void rotateInPlace(int, bool);
     void stopCar();
-    void rollCarFoward(int, int, bool); 
+    void rollCarFoward(int, float, bool); 
+    void rollCarBack(int, float, bool);
     //upravljacki set
-    void controlCar(Command, int);
+    void controlCar(Command, int, float);
 };
 
 #endif

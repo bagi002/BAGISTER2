@@ -51,3 +51,7 @@ Istorija razvoja:
         -Prvi put implementiran novi sistem za odredjivanje stepena skretanja vozila u kretanju
             kao i sistem koji obezbjedjuje da se ne odgovara na zahtjeve koje vozilo fizicki nemoze obezbjedit
         -Kreiran napredniji komunikacioni protokol za slanje komandi na vozilo
+    V2.4.0
+        -Unapredjen motor drajver da podrzi rolling kretanje odnosno motanje u pokretu
+        -unapredjivanje veze izmedju dva uredjaja tako da podrzi dodatne podatke
+        -Kreiran sistem prijema informacije na automobilu i slanje podataka drajveru motora

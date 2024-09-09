@@ -13,6 +13,7 @@ void loop() {
 
     int speed;
     bool controling = false;
+    float rolling;
 
     if(Serial.available() > 0){
         data = Serial.readStringUntil('\n');
@@ -20,10 +21,17 @@ void loop() {
 
     if(data.length() > 0){
         String tmp = "";
+        int dat = 0;
 
         for(int i = 0; i < data.length(); i++){
             if(data[i] == ';'){
-                command = (Command)tmp.toInt();
+                if(dat == 0){
+                    command = (Command)tmp.toInt();
+                }
+                if(dat == 1){
+                    rolling = (float)tmp.toFloat();
+                }
+                dat++;
                 i++;
                 tmp = "";
             }
@@ -38,7 +46,7 @@ void loop() {
 
     if(controling){
         controling = false;
-        motori.controlCar(command, speed);
+        motori.controlCar(command, speed, rolling);
     }
 
     delay(20);

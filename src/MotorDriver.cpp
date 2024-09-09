@@ -232,7 +232,45 @@ void MotorDriver::stopCar(){
     stopRightSide();
 }
 
-void MotorDriver::controlCar(Command command, int speed){
+void MotorDriver::rollCarFoward(int speed, float rolling, bool right){
+    if(BLState != FOWARD || FLState != FOWARD || BRState != FOWARD || FRState != FOWARD){
+        fowardCar(200);
+        delay(15);
+    }
+
+    if(speed < 120) speed = 140;
+
+    rolling = 1.0 - rolling;
+
+    if(right){
+        fowardLeftSide(speed);
+        fowardRightSide((80 + (speed - 80) * rolling));
+    }else{
+        fowardRightSide(speed);
+        fowardLeftSide((80 + (speed - 80) * rolling));
+    }
+}
+
+void MotorDriver::rollCarBack(int speed, float rolling, bool right){
+    if(BLState != BACK || FLState != BACK || BRState != BACK || FRState != BACK){
+        backCar(200);
+        delay(15);
+    }
+
+    if(speed < 120) speed = 140;
+
+    rolling = 1.0 - rolling;
+
+    if(right){
+        backLeftSide(speed);
+        backRightSide((80 + (speed - 80) * rolling));
+    }else{
+        backRightSide(speed);
+        backLeftSide((80 + (speed - 80) * rolling));
+    }
+}
+
+void MotorDriver::controlCar(Command command, int speed, float rolling = 1){
     switch(command){
         case STOPC:
             stopCar();
@@ -248,6 +286,18 @@ void MotorDriver::controlCar(Command command, int speed){
             break;
         case ROTATELEFTC:
             rotateInPlace(speed, false);
+            break;
+        case FOWARDRIGHTC:
+            rollCarFoward(speed, rolling, true);
+            break;
+        case FOWARDLEFTC:
+            rollCarFoward(speed, rolling, false);
+            break;
+        case BACKRIGHTC:
+            rollCarBack(speed, rolling, true);
+            break;
+        case BACKLEFTC:
+            rollCarBack(speed, rolling, false);
             break;
     }
 }

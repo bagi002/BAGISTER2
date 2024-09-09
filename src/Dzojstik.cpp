@@ -15,7 +15,7 @@ enum Direction{
 typedef struct MESSAGE{
     Direction direction;
     int speed;
-    long roling;
+    float roling;
 }Message;
 
 Message message;
