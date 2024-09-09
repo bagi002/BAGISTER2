@@ -46,3 +46,8 @@ Istorija razvoja:
         -Razvijen u okviru samog drajvera sistem za prijem komande i odgovor na istu
     V2.2.0
         -Razvijen napredniji sistem komunikacije dzojstik <-> auto zasnovan na ESP-NOW
+    V2.3.0
+        -Razvijen novi sistem ocitavanja dzojstika sa novim sistemom ocitavanja osjetljivosti
+        -Prvi put implementiran novi sistem za odredjivanje stepena skretanja vozila u kretanju
+            kao i sistem koji obezbjedjuje da se ne odgovara na zahtjeve koje vozilo fizicki nemoze obezbjedit
+        -Kreiran napredniji komunikacioni protokol za slanje komandi na vozilo
