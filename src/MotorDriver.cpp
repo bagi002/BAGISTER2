@@ -213,9 +213,6 @@ void MotorDriver::backCar(int speed){
 
 void MotorDriver::rotateInPlace(int speed, bool right){
     if(speed < 140) speed = 200;
-    stopLeftSide();
-    stopRightSide();
-    delay(3);
     if(right){
         fowardLeftSide(speed);
         delay(8);

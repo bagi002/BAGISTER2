@@ -19,7 +19,6 @@ typedef struct MESSAGE{
 }Message;
 
 Message message;
-Message lastMessage;
 
 float mapCustom(float, float, float);
 
@@ -35,8 +34,6 @@ void setup(){
     message.direction = STOP;
     message.roling = 0;
     message.speed = 0;
-
-    lastMessage = message;
 
     if(esp_now_init() != ESP_OK){
         error = true;
@@ -60,7 +57,7 @@ void setup(){
 }
 
 void loop() {
-    delay(100);
+    delay(87);
 
     int x = analogRead(xOsa) - 1965;
     int y = analogRead(yOsa) - 1925;
@@ -132,11 +129,8 @@ void loop() {
         }
     }
 
-    if(message.direction == lastMessage.direction && (message.speed == lastMessage.speed) && message.roling == lastMessage.roling){
-    }else{
-        lastMessage = message;
         esp_now_send(AutoAdress, (uint8_t *) &message, sizeof(message));
-    }
+
 }
 
 float mapCustom(float input, float minInput, float maxInput) {

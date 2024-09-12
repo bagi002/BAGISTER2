@@ -5,6 +5,8 @@ MotorDriver motori;
 
 void setup() {
     Serial.begin(115200);
+
+    Serial.println("Krece");
 }
 
 void loop() {
@@ -41,7 +43,7 @@ void loop() {
         speed = tmp.toInt();
         controling = true;
 
-
+        Serial.println("primljeno");
     }
 
     if(controling){

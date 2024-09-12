@@ -58,3 +58,6 @@ Istorija razvoja:
     V2.4.1
         -Ispravljena greska u drajveru vozila koja je nakon skretanja vozila izaazivala gresku pri 
          kretanju naprjed
+    V2.5.0
+        -Implementiran freeRTOS sistem na vozilu odnosno na glavnom mikrokokontroleru u sistemu
+    
