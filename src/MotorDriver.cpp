@@ -214,13 +214,28 @@ void MotorDriver::backCar(int speed){
 void MotorDriver::rotateInPlace(int speed, bool right){
     if(speed < 140) speed = 200;
     if(right){
-        fowardLeftSide(speed);
-        delay(8);
-        backRightSide(speed);
+        /*while(1){
+            stopRightSide();
+            fowardLeftSide(speed);
+            delay(20);
+            stopLeftSide();
+            backRightSide(speed);
+            if(Serial.available() > 0) return;
+        }*/
+       fowardLeftSide(speed);
+       stopRightSide();
     }else{
-        backLeftSide(speed);
-        delay(8);
-        fowardRightSide(speed);
+        /*while(1){
+            stopRightSide();
+            backLeftSide(speed);
+            delay(40);
+            stopLeftSide();
+            fowardRightSide(speed);
+            delay(40);
+            if(Serial.available() > 0) return;
+        }*/
+       fowardRightSide(speed);
+       stopLeftSide();
     }
 }
 
@@ -240,11 +255,11 @@ void MotorDriver::rollCarFoward(int speed, float rolling, bool right){
     rolling = 1.0 - rolling;
 
     if(right){
-        fowardLeftSide(speed);
-        fowardRightSide((80 + (speed - 80) * rolling));
+        changeSpeedLeft(speed);
+        changeSpeedRight((60 + (speed - 60) * rolling));
     }else{
-        fowardRightSide(speed);
-        fowardLeftSide((80 + (speed - 80) * rolling));
+        changeSpeedRight(speed);
+        changeSpeedLeft((60 + (speed - 60) * rolling));
     }
 }
 
@@ -259,11 +274,11 @@ void MotorDriver::rollCarBack(int speed, float rolling, bool right){
     rolling = 1.0 - rolling;
 
     if(right){
-        backLeftSide(speed);
-        backRightSide((80 + (speed - 80) * rolling));
+        changeSpeedLeft(speed);
+        changeSpeedRight((60 + (speed - 60) * rolling));
     }else{
-        backRightSide(speed);
-        backLeftSide((80 + (speed - 80) * rolling));
+        changeSpeedRight(speed);
+        changeSpeedLeft((60 + (speed - 60) * rolling));
     }
 }
 

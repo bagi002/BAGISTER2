@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <esp_now.h>
+#include <Ultrasonic.h>
 
 // Dodatni tipovi podataka
 enum Direction{
@@ -18,6 +19,7 @@ typedef struct MESSAGE{
 Message message;
 bool dataEnter = false;
 portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
+UlSenzor senzor1(34, 35);
 
 // Taskovi i prekidneRutine
 void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
@@ -28,7 +30,10 @@ void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
 }
 
 void readFrontSensor(void *parms){
-    
+    while(1){
+        senzor1.loadDistance();
+        vTaskDelay(40/ portTICK_PERIOD_MS);
+    }
 }
 
 void sendMessageOnMotors(void *Params){
@@ -69,8 +74,9 @@ void setup(){
 
     esp_now_register_recv_cb(onDataRecv);
 
-    xTaskCreate(sendMessageOnMotors, "driverCom", 1024, NULL, 1, NULL);
 
+    xTaskCreate(sendMessageOnMotors, "driverCom", 1024, NULL, 1, NULL);
+    xTaskCreate(readFrontSensor, "frontSenz", 256, NULL, 2, NULL);
 }
 
 void loop(){} // obavezno prazno

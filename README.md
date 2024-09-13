@@ -60,4 +60,7 @@ Istorija razvoja:
          kretanju naprjed
     V2.5.0
         -Implementiran freeRTOS sistem na vozilu odnosno na glavnom mikrokokontroleru u sistemu
+    V2.5.1
+        -Dodan senzor u sistem implementirana biblioteka i aplikacija za ocitavanje istoga u sistemu
+        -Radjene odredjene korekcije na drajveru motora
     
