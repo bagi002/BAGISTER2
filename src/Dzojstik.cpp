@@ -6,6 +6,7 @@ uint8_t AutoAdress[] = {0xEC, 0x64, 0xC9, 0x85, 0x85, 0xBC};
 int xOsa = 34;
 int yOsa = 35;
 int indikator = 2;
+int sirenPin = 32;
 
 enum Direction{
     FOWARD, BACK, LEFT, RIGHT, STOP,
@@ -16,6 +17,7 @@ typedef struct MESSAGE{
     Direction direction;
     int speed;
     float roling;
+    bool siren;
 }Message;
 
 Message message;
@@ -34,6 +36,7 @@ void setup(){
     message.direction = STOP;
     message.roling = 0;
     message.speed = 0;
+
 
     if(esp_now_init() != ESP_OK){
         error = true;
@@ -61,20 +64,24 @@ void loop() {
 
     int x = analogRead(xOsa) - 1965;
     int y = analogRead(yOsa) - 1925;
+    x = -x;
+    y = -y;
+
+
     float xN = 0;
     float yN = 0;
     if(x > 60 + abs(y)/3){
-      xN = mapCustom(x, 150.0, 2130.0);
+      xN = mapCustom(x, 150.0, 1965);
     }else if(x < -60 - abs(y)/3){
-      xN = -mapCustom(-x, 150, 1965);
+      xN = -mapCustom(-x, 150, 2130);
     }else{
       xN = 0;
     }
 
     if(y > 300 + abs(x)/3){
-      yN = mapCustom(y, 300.0, 2170.0);
+      yN = mapCustom(y, 300.0, 1925.0);
     }else if(y < -300 - abs(x)/3){
-      yN = -mapCustom(-y, 300, 1925);
+      yN = -mapCustom(-y, 300, 2170);
     }else{
       yN = 0;
     }

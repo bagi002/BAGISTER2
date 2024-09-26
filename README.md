@@ -63,4 +63,9 @@ Istorija razvoja:
     V2.5.1
         -Dodan senzor u sistem implementirana biblioteka i aplikacija za ocitavanje istoga u sistemu
         -Radjene odredjene korekcije na drajveru motora
+    V2.5.2
+        -Implementirane minimalne izmjene u dizajnu dzojstika
+        -Implementiran NAV sa bazicnim test sistemom
+        -Immplementirana zastita od sudara vozilo se zaustavlja ispred prepereke
+        
     

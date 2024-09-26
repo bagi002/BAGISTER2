@@ -2,28 +2,19 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <Ultrasonic.h>
-
-// Dodatni tipovi podataka
-enum Direction{
-    FOWARD, BACK, LEFT, RIGHT, STOP,
-    FOWARDRIGHT, FOWARDLEFT, BACKRIGHT, BACKLEFT
-};
-
-typedef struct MESSAGE{
-    Direction direction;
-    int speed;
-    float rolling;
-}Message;
+#include <NAV.h>
 
 //Globalne promjenjive
-Message message;
+Message inMessage = {STOP, 0, 0.0};
+Message toCarMessage = {STOP, 0, 0.0};
 bool dataEnter = false;
 portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
-UlSenzor senzor1(34, 35);
+UlSenzor senzor1(27, 35);
+NAV controler(&senzor1);
 
 // Taskovi i prekidneRutine
 void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
-    memcpy(&message, incomingData, sizeof(message));
+    memcpy(&inMessage, incomingData, sizeof(inMessage));
     taskENTER_CRITICAL(&myMutex);
     dataEnter = true;
     taskEXIT_CRITICAL(&myMutex);
@@ -32,7 +23,7 @@ void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
 void readFrontSensor(void *parms){
     while(1){
         senzor1.loadDistance();
-        vTaskDelay(40/ portTICK_PERIOD_MS);
+        vTaskDelay(25/ portTICK_PERIOD_MS);
     }
 }
 
@@ -44,7 +35,7 @@ void sendMessageOnMotors(void *Params){
             taskENTER_CRITICAL(&myMutex);
             dataEnter = false;
             taskEXIT_CRITICAL(&myMutex);
-            Message copy = message;
+            Message copy = toCarMessage;
 
             mess = String((int)copy.direction)+";"+String(copy.rolling) + ";" + String(copy.speed) + "\n";
             Serial.println(mess);
@@ -57,7 +48,16 @@ void sendMessageOnMotors(void *Params){
                 Serial2.print(mess);
             }
         }
-        vTaskDelay(100/ portTICK_PERIOD_MS);
+        vTaskDelay(70/ portTICK_PERIOD_MS);
+    }
+}
+
+void navControl(void *parms){
+    while(1){
+        controler.readInputMessage(inMessage);
+        controler.autonomousControl();
+        toCarMessage = controler.getOutput();
+        vTaskDelay(48/ portTICK_PERIOD_MS);
     }
 }
 
@@ -76,7 +76,8 @@ void setup(){
 
 
     xTaskCreate(sendMessageOnMotors, "driverCom", 1024, NULL, 1, NULL);
-    xTaskCreate(readFrontSensor, "frontSenz", 256, NULL, 2, NULL);
+    xTaskCreate(readFrontSensor, "frontSenz", 1024, NULL, 1, NULL);
+    xTaskCreate(navControl, "nav", 1024, NULL, 1, NULL);
 }
 
 void loop(){} // obavezno prazno

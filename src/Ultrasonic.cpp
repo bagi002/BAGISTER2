@@ -17,9 +17,13 @@ void UlSenzor::loadDistance(){
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
 
-    long duration = pulseIn(echoPin, HIGH, 3500);
+    long duration = pulseIn(echoPin, HIGH,3500);
+
+    Serial.print("Duration: ");
+    Serial.println(duration);
 
     distance = duration * 0.0343 / 2;
+    if(distance == 0)distance = 100.0;
 }
 
 float UlSenzor::getDistance(){
@@ -27,6 +31,6 @@ float UlSenzor::getDistance(){
 }
 
 bool UlSenzor::alarmDistance(){
-    if(distance < 15) return true;
+    if(distance < 20) return true;
     return false;
 }
