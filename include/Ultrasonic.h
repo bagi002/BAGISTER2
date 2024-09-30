@@ -6,6 +6,7 @@ private:
     int trigPin;
     int echoPin;
     float distance;
+    float lastDistance[5];
 public:
     UlSenzor(int, int);
     void loadDistance();

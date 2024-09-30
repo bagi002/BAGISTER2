@@ -67,5 +67,15 @@ Istorija razvoja:
         -Implementirane minimalne izmjene u dizajnu dzojstika
         -Implementiran NAV sa bazicnim test sistemom
         -Immplementirana zastita od sudara vozilo se zaustavlja ispred prepereke
+    V2.5.3
+        -Dodati enkoderi brzine na tockove (samo hardverski nema softversku podrsku)
+        -Uradjene privremene izmjene na drajveru motora kao odgovor na privremeno hardversko 
+         resenje zamjene 2 L298N sa samo jednim zbog dizanja performansi sistema kao prelazno resenje
+         do montaze novih drajvera
+        -Stari sistem napajanja zamjenjen sa novom pametnom Li-ion baterijom 9V
+        -Dodata klasa bateryHelt za pracenje stanja baterije (Djelimicno funkcionalno)
+        -IMplementiran novi sistem povratne komunikacije sa Auta na dzojstik ESP-NOW protokol
+        -Implementiran sistem autoamtske regulacije brzine na osnovu blizine prepreka u NAV djelu
+        -Na Dzojstiku dodat LCD ekran (podrska poruke dobrodoslice i ispis napona baterije na vozilu)
         
     

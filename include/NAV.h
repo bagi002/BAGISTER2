@@ -14,6 +14,10 @@ typedef struct MESSAGE{
     float rolling;
 }Message;
 
+typedef struct MESSAGE2{
+    int numeric;
+}Message2;
+
 class NAV{
 private:
     Message input;
@@ -22,9 +26,13 @@ private:
 public:
     NAV(UlSenzor*);
     void emergencyStop();
+    void selfDrivingI();
     void readInputMessage(Message);
     void autonomousControl();
+    void autoRegulationSpeed();
+    int autoClacluateSpeed(float);
     Message getOutput();
+
 };
 
 #endif

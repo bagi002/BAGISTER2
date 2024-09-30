@@ -1,12 +1,26 @@
 #include <Arduino.h>
 #include <esp_now.h>
 #include <WiFi.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+
+#define TFT_CS -1
+#define TFT_RST 4
+#define TFT_DC 5
+#define TFT_MOSI 22
+#define TFT_SCLK 18
 
 uint8_t AutoAdress[] = {0xEC, 0x64, 0xC9, 0x85, 0x85, 0xBC};
 int xOsa = 34;
 int yOsa = 35;
-int indikator = 2;
+int indikator = 21;
 int sirenPin = 32;
+
+
+float oldNapon = 0;
+
+Adafruit_ST7789 tft = Adafruit_ST7789(-1, 5, 4);
 
 enum Direction{
     FOWARD, BACK, LEFT, RIGHT, STOP,
@@ -20,14 +34,26 @@ typedef struct MESSAGE{
     bool siren;
 }Message;
 
+typedef struct MESSAGE2{
+    int numeric;
+}Message2;
+
 Message message;
+Message2 autoData;
 
 float mapCustom(float, float, float);
+void printBateryData();
+
+void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
+    memcpy(&autoData, incomingData, sizeof(autoData));
+}
 
 void setup(){
     bool error = false;
     WiFi.mode(WIFI_STA);
     Serial.begin(115200);
+    Serial.println(WiFi.macAddress());
+    autoData.numeric = 0;
     
     pinMode(indikator, OUTPUT);
     pinMode(xOsa, INPUT);
@@ -36,6 +62,25 @@ void setup(){
     message.direction = STOP;
     message.roling = 0;
     message.speed = 0;
+
+    // LCD
+        tft.init(240, 240, SPI_MODE3);
+        tft.setRotation(2);
+        tft.fillScreen(ST77XX_BLACK);
+        tft.setCursor(5,100);
+        tft.setTextColor(ST77XX_WHITE);
+        tft.setTextSize(4);
+        tft.println("BAGISTER2");
+        tft.setTextColor(ST77XX_CYAN);
+        tft.setTextSize(3);
+        delay(2000);
+        tft.fillScreen(ST77XX_BLACK);
+        tft.setCursor(15,20);
+        tft.setTextColor(ST77XX_WHITE);
+        tft.setTextSize(3);
+        tft.print("Napon: ");
+        tft.println("0 V");
+        
 
 
     if(esp_now_init() != ESP_OK){
@@ -57,6 +102,8 @@ void setup(){
     if(!error){
         digitalWrite(indikator, HIGH);
     }
+       esp_now_send(AutoAdress, (uint8_t *) &message, sizeof(message));
+    esp_now_register_recv_cb(onDataRecv);
 }
 
 void loop() {
@@ -137,7 +184,7 @@ void loop() {
     }
 
         esp_now_send(AutoAdress, (uint8_t *) &message, sizeof(message));
-
+        printBateryData();
 }
 
 float mapCustom(float input, float minInput, float maxInput) {
@@ -148,4 +195,19 @@ float mapCustom(float input, float minInput, float maxInput) {
 
     float target = 100.0 + (transformedInput * (255.0 - 100.0));
     return target;
+}
+
+void printBateryData(){
+        float in = (3.3 / 4095.0) * autoData.numeric + 0.12;
+        float napon = in * 3.195;
+        if(napon + 0.08 < oldNapon || napon - 0.08 > oldNapon){
+            tft.fillScreen(ST77XX_BLACK);
+            tft.setCursor(3,20);
+            tft.setTextColor(ST77XX_GREEN);
+            tft.setTextSize(3);
+            tft.print("Napon: ");
+            tft.print(napon);
+            tft.println(" V");
+        }
+        oldNapon = napon;
 }

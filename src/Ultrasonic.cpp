@@ -8,6 +8,7 @@ UlSenzor::UlSenzor(int trig, int echo){
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
     distance = 0.0;
+    for(int i = 0; i < 5; i++)lastDistance[i] = 0.0;
 }
 
 void UlSenzor::loadDistance(){
@@ -17,13 +18,21 @@ void UlSenzor::loadDistance(){
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
 
-    long duration = pulseIn(echoPin, HIGH,3500);
+    long duration = pulseIn(echoPin, HIGH,5500);
+    float rawdistance = duration * 0.0343 / 2;
+    float sum = 0;
 
-    Serial.print("Duration: ");
-    Serial.println(duration);
+    for(int i = 1; i < 5; i++){
+        lastDistance[i] = lastDistance[i-1];
+        sum += lastDistance[i];
+    }
+        lastDistance[0] = rawdistance;
+        distance = (sum + rawdistance) / 5;
 
-    distance = duration * 0.0343 / 2;
-    if(distance == 0)distance = 100.0;
+    //Serial.print("Distance: ");
+    //Serial.print(distance);
+    //Serial.println(" cm");
+    if(distance == 0)distance = 60.0;
 }
 
 float UlSenzor::getDistance(){
@@ -31,6 +40,6 @@ float UlSenzor::getDistance(){
 }
 
 bool UlSenzor::alarmDistance(){
-    if(distance < 20) return true;
+    if(distance < 10) return true;
     return false;
 }

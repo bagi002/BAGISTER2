@@ -3,14 +3,20 @@
 #include <esp_now.h>
 #include <Ultrasonic.h>
 #include <NAV.h>
+#include <batteryHelt.h>
 
 //Globalne promjenjive
 Message inMessage = {STOP, 0, 0.0};
 Message toCarMessage = {STOP, 0, 0.0};
+Message2 messStat = {0};
 bool dataEnter = false;
 portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE senzorU = portMUX_INITIALIZER_UNLOCKED;
 UlSenzor senzor1(27, 35);
 NAV controler(&senzor1);
+Battery battery;
+
+uint8_t DzojstikAdress[] = {0xC8, 0x2E, 0x18, 0xF8, 0x6A, 0xAC};
 
 // Taskovi i prekidneRutine
 void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
@@ -20,10 +26,27 @@ void onDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len){
     taskEXIT_CRITICAL(&myMutex);
 }
 
+void readBateryStatus(void *params){
+    while(1){
+        battery.readVoltage();
+        messStat.numeric = battery.getVoltageSource();
+        vTaskDelay(100/ portTICK_PERIOD_MS);
+    }
+}
+
+void sendDataOnDzojstik(void *params){
+    while(1){
+        esp_now_send(DzojstikAdress, (uint8_t *) &messStat, sizeof(messStat));
+        vTaskDelay(450/portTICK_PERIOD_MS);
+    }
+}
+
 void readFrontSensor(void *parms){
     while(1){
+        taskENTER_CRITICAL(&senzorU);
         senzor1.loadDistance();
-        vTaskDelay(25/ portTICK_PERIOD_MS);
+        taskEXIT_CRITICAL(&senzorU);
+        vTaskDelay(35/ portTICK_PERIOD_MS);
     }
 }
 
@@ -46,16 +69,19 @@ void sendMessageOnMotors(void *Params){
             if(notData>5){
                 mess = "4;0.0;0\n";
                 Serial2.print(mess);
+                Serial.println(mess);
             }
         }
-        vTaskDelay(70/ portTICK_PERIOD_MS);
+        vTaskDelay(85/ portTICK_PERIOD_MS);
     }
 }
 
 void navControl(void *parms){
     while(1){
         controler.readInputMessage(inMessage);
+        taskENTER_CRITICAL(&senzorU);
         controler.autonomousControl();
+        taskEXIT_CRITICAL(&senzorU);
         toCarMessage = controler.getOutput();
         vTaskDelay(48/ portTICK_PERIOD_MS);
     }
@@ -72,12 +98,23 @@ void setup(){
         Serial.println("Komunikacija uspostavljena");
     }
 
+    esp_now_peer_info_t peerInfo = {};
+    memcpy(peerInfo.peer_addr, DzojstikAdress, 6);
+    peerInfo.channel = 0;
+    peerInfo.encrypt = false;
+
+    if(esp_now_add_peer(&peerInfo) != ESP_OK){
+        Serial.println("Greska pri konektovanju na Dzojstik");
+    }
+
     esp_now_register_recv_cb(onDataRecv);
 
 
-    xTaskCreate(sendMessageOnMotors, "driverCom", 1024, NULL, 1, NULL);
+    xTaskCreate(sendMessageOnMotors, "driverCom", 1024, NULL, 0, NULL);
     xTaskCreate(readFrontSensor, "frontSenz", 1024, NULL, 1, NULL);
-    xTaskCreate(navControl, "nav", 1024, NULL, 1, NULL);
+    xTaskCreate(navControl, "nav", 1024, NULL, 2, NULL);
+    xTaskCreate(readBateryStatus, "batery", 1024, NULL, 0, NULL);
+    xTaskCreate(sendDataOnDzojstik, "sender", 1024, NULL, 0, NULL);
 }
 
 void loop(){} // obavezno prazno
